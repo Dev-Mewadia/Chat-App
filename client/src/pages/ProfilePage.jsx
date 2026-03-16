@@ -1,102 +1,90 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import assets from "../assets/assets";
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import assets, { userDummyData } from '../assets/assets';
 
 const ProfilePage = () => {
-  const [selectedImg, setSelectedImg] = useState(null);
+  const [selectedImg, setSelectedImg] = useState(null)
+  const [name, setName] = useState("")
+  const [bio, setBio] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const navigate = useNavigate();
 
-  const [name, setName] = useState("Martin Jhonson");
-  const [bio, setBio] = useState("Hi EveryOne, i am using QuickChat");
+  // Load dummy user data initially
+  useEffect(() => {
+    if (userDummyData.length > 0) {
+      const currentUser = userDummyData[0]; // Assume first user
+      setName(currentUser.fullName || "Martin Johnson")
+      setBio(currentUser.bio || "Hi Everyone, I am using QuickChat")
+    }
+  }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/");
-  };
+    setLoading(true)
+    setError("")
+    try {
+      // TODO: Integrate with backend API
+      // await fetch('/api/users/profile', { method: 'PUT', body: JSON.stringify({ name, bio, selectedImg }) })
+      console.log('Profile saved:', { name, bio, selectedImg })
+      navigate('/')
+    } catch (err) {
+      setError('Failed to save profile')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center relative">
-
-      {/* Glass Card */}
-      <div
-        className="w-[900px] max-w-[90%] flex justify-between items-center
-        bg-white/5 backdrop-blur-xl border border-white/10
-        rounded-2xl shadow-2xl p-10"
-      >
-
-        {/* LEFT SIDE FORM */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-4 w-[45%] text-gray-200"
-        >
-          <h3 className="text-lg font-medium">Profile details</h3>
-
-          <label
-            htmlFor="avatar"
-            className="flex items-center gap-3 cursor-pointer text-sm"
-          >
-            <input
-              type="file"
-              id="avatar"
-              hidden
-              accept=".png,.jpg,.jpeg,.heic"
-              onChange={(e) => setSelectedImg(e.target.files[0])}
+    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center bg-cover bg-no-repeat relative'>
+     <div className='w-5/6 max-w-2xl backdrop-blur-2xl text-gray-300 border-2 border-gray-600 flex items-center justify-between max-sm:flex-col-reverse rounded-lg'>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-10 flex-1">
+         <h3 className='text-lg'>Profile Details</h3>
+         <label htmlFor="avatar" className='flex items-center gap-3 cursor-pointer text-sm'>
+            <input 
+              onChange={(e) => setSelectedImg(e.target.files[0])} 
+              type="file" 
+              id='avatar' 
+              accept='.png, .jpg,.jpeg, .heic' 
+              hidden 
             />
-
-            <img
-              src={
-                selectedImg
-                  ? URL.createObjectURL(selectedImg)
-                  : assets.avatar_icon
-              }
-              alt=""
-              className="w-10 h-10 rounded-full object-cover"
+            <img 
+              src={selectedImg ? URL.createObjectURL(selectedImg) : assets.avatar_icon} 
+              alt="Profile avatar"
+              className={`w-12 h-12 rounded-full ${selectedImg ? 'ring-2 ring-violet-500' : ''}`}
             />
-
-            upload profile image
-          </label>
-
-          <input
-            type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="p-2 rounded-md border border-gray-500 bg-transparent
-            focus:outline-none focus:ring-2 focus:ring-violet-500"
-          />
-
-          <textarea
-            rows={4}
-            required
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            className="p-2 rounded-md border border-gray-500 bg-transparent
-            focus:outline-none focus:ring-2 focus:ring-violet-500"
-          />
-
-          <button
-            type="submit"
-            className="bg-gradient-to-r from-purple-400 to-violet-600
-            py-2 rounded-full text-white mt-2"
-          >
-            Save
-          </button>
+            Upload profile image
+         </label>
+         {error && <p className="text-red-400 text-sm">{error}</p>}
+         <input 
+           onChange={(e) => setName(e.target.value)}
+           value={name}
+           type="text" 
+           required 
+           placeholder='Your Name' 
+           className='p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 bg-transparent' 
+         />
+         <textarea 
+           onChange={(e) => setBio(e.target.value)} 
+           value={bio} 
+           placeholder="Write Profile Bio" 
+           required 
+           className="p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 bg-transparent" 
+           rows={4} 
+         />
+         <button 
+           type="submit" 
+           disabled={loading}
+           className="bg-gradient-to-r from-purple-400 to-violet-600 text-white p-2 rounded-full text-lg cursor-pointer hover:from-purple-500 hover:to-violet-700 disabled:opacity-50"
+         >
+           {loading ? 'Saving...' : 'Save'}
+         </button>
         </form>
-
-        {/* RIGHT SIDE LOGO */}
-        <div className="flex justify-center items-center w-[50%]">
-
-          <img
-            src={assets.logo_icon}
-            alt="QuickChat"
-            className="max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10"
-          />
-
-        </div>
-
-      </div>
+         <img className='max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10 object-cover' src={assets.profile_martin} alt="Profile preview" />
+     </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfilePage;
+export default ProfilePage
+

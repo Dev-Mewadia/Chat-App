@@ -1,0 +1,1 @@
+# Server Fix Progress\n\n## Steps:\n- [x] 1. Edit messageRoutes.js: add sendMessage import, fix /mark/:id route\n- [x] 2. Edit server.js: fix socket disconnect event name\n- [ ] 3. Test server startup\n- [ ] 4. Setup .env and DB\n- [ ] 5. Full test
