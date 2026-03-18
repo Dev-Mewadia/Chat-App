@@ -8,7 +8,7 @@ export const connectDB = async () => {
       console.log("Database Connected");
     });
 
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(`${process.env.MONGODB_URI}/chat-app`);
 
   } catch (error) {
     console.error("MongoDB connection error:", error);

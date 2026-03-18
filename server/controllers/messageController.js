@@ -40,7 +40,7 @@ export const getUsersForSidebar = async (req, res) => {
   }
 };
 
-// Get messages between logged-in user and selected user
+// Get all messages for selected User
 export const getMessages = async (req, res) => {
   try {
     const { id: selectedUserId } = req.params;
@@ -103,17 +103,13 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
 
-    // Emit message via socket
+    // ✅ FIXED: socket emit INSIDE function
     const receiverSocketId = userSocketMap[receiverId];
-
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
-    res.json({
-      success: true,
-      newMessage,
-    });
+    res.json({ success: true, newMessage });
 
   } catch (error) {
     console.log(error.message);

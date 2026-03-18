@@ -1,18 +1,27 @@
-import jwt from 'jsonwebtoken';
+import User from "../models/User.js";
 
-// Placeholder auth middleware
-export const protectRoute = (req, res, next) => {
+
+// Middleware to protect routes
+
+export const protectRoute = async (req,res,next) =>{
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
-    req.user = decoded; // Would be { id: user._id }
+    const token = req.headers.token;
+
+    const decoded = JsonWebTokenError.verify((token, process.env.JWT_SECRET))
+
+    const user = await User.findById(decoded.userId).select("-password");
+
+    if(!user) return res.json({success:false, message:"User Not Found"});
+
+    req.user = user;
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    res.json({ success:false, message:"User Not Found"});
   }
-};
+}
 
-export const protect = protectRoute; // Alias for consistency
-
+//Controller to check if user is authenticated
+export const checkAuth =(req,res)=>{
+  res.json({success:true,user:req.user});
+  
+}
